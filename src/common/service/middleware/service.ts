@@ -1,18 +1,24 @@
 import { Request, Response, NextFunction } from "express";
+import TYPES from "../../../ioc/types";
+import { container } from "../../../ioc/container";
+
 import { ILogger } from "../Logger/0.model";
 import { CONSTANT } from "../../constant/constant";
 
 import { ServiceTenant } from "../tenant/1.service";
 import { IRequestHeaders } from "../../utility/common-headers";
 import { HttpStatusCode } from "../../constant/http-status-code";
-import { container } from "../../../ioc/container";
 import { RequestContextProvider } from "../RequestContext/service";
 import { RequestContext } from "../RequestContext/model";
 import { validateHeaders } from "../../validator-header";
 
 export class MiddlewareProvider {
-  constructor(private logger: ILogger, private tenantService: ServiceTenant) {
-    this.tenantService = tenantService;
+  private logger: ILogger;
+  private tenantService: ServiceTenant;
+
+  constructor() {
+    this.logger = container.get(TYPES.LoggerService);
+    this.tenantService = container.get(ServiceTenant);
   }
 
   // Middleware to handle exception and modify response body

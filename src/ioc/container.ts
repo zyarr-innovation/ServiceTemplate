@@ -4,8 +4,9 @@ import TYPES from "./types";
 import { BaseController } from "../common/base-controller";
 import { ILogger } from "../common/service/Logger/0.model";
 import { LoggerService } from "../common/service/Logger/1.service";
-
+import { ServiceTenant } from "../common/service/tenant/1.service";
 import { RequestContextProvider } from "../common/service/RequestContext/service";
+import { MiddlewareProvider } from "../common/service/middleware/service";
 
 import { ControllerStudent } from "../student/2.controller";
 import { IServiceStudent } from "../student/3.service.model";
@@ -14,9 +15,10 @@ import { IRepoStudent } from "../student/5.repo.model";
 import { RepoStudentImpl } from "../student/6.repo";
 
 const container = new Container();
-container.bind<ILogger>(TYPES.ServiceLogger).to(LoggerService);
-
+container.bind<ILogger>(TYPES.LoggerService).to(LoggerService);
+container.bind(ServiceTenant).toSelf().inSingletonScope();
 container.bind(RequestContextProvider).toSelf().inSingletonScope();
+container.bind(MiddlewareProvider).toSelf().inSingletonScope();
 
 container
   .bind<ControllerStudent>(TYPES.ControllerStudent)

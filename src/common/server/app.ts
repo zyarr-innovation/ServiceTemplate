@@ -4,18 +4,22 @@ import helmet from "helmet";
 import path from "path";
 import dotenv from "dotenv";
 
-import { serverConfig } from "./server/0.server-config";
-import { container } from "../ioc/container";
-import { MiddlewareProvider } from "./service/middleware/service";
+import { serverConfig } from "./0.server-config";
+import { container } from "../../ioc/container";
+import TYPES from "../../ioc/types";
+
+import { MiddlewareProvider } from "../service/middleware/service";
 import { InversifyExpressServer } from "inversify-express-utils";
-import { ILogger } from "./service/Logger/0.model";
-import { ServiceTenant } from "./service/tenant/1.service";
+import { ILogger } from "../service/Logger/0.model";
+import { ServiceTenant } from "../service/tenant/1.service";
 
 export class App {
   middlewareService: MiddlewareProvider;
+  private logger: ILogger;
 
-  constructor(private logger: ILogger, tenantService: ServiceTenant) {
-    this.middlewareService = new MiddlewareProvider(logger, tenantService);
+  constructor() {
+    this.logger = container.get(TYPES.LoggerService);
+    this.middlewareService = container.get(MiddlewareProvider);
   }
 
   public init(): Application {

@@ -1,16 +1,16 @@
 import { inject } from "inversify";
 import TYPE from "../ioc/types";
+import { container } from "../ioc/container";
 
 import { IStudent } from "./0.model";
 import { IServiceStudent } from "./3.service.model";
 import { IRepoStudent } from "./5.repo.model";
 
 export class ServiceStudentImpl implements IServiceStudent {
-  @inject(TYPE.RepoStudent)
   private repoService!: IRepoStudent;
 
   constructor() {
-    console.log(this.repoService);
+    this.repoService = container.get(TYPE.RepoStudent);
   }
 
   async get(studentId: number): Promise<IStudent | null> {

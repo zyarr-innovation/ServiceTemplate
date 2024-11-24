@@ -12,6 +12,7 @@ import {
 
 import { LoggerService } from "../common/service/Logger/1.service";
 import TYPES from "../ioc/types";
+import { container } from "../ioc/container";
 
 import { BaseController } from "../common/base-controller";
 import { HttpStatusCode } from "../common/constant/http-status-code";
@@ -24,15 +25,13 @@ import { ILogger } from "../common/service/Logger/0.model";
 
 @controller("/student")
 export class ControllerStudent extends BaseController {
-  @inject(TYPES.ServiceLogger)
-  private logger!: ILogger;
-
-  @inject(TYPES.ServiceStudent)
-  private serviceStudent!: IServiceStudent;
+  private logger: ILogger;
+  private serviceStudent: IServiceStudent;
 
   constructor() {
     super();
-    console.log(this.logger);
+    this.logger = container.get(TYPES.LoggerService);
+    this.serviceStudent = container.get(TYPES.ServiceStudent);
   }
 
   // Middleware to handle headers and set common response headers

@@ -1,5 +1,5 @@
 const TYPES = {
-  ServiceLogger: Symbol("Logger"),
+  LoggerService: Symbol("LoggerService"),
 
   ControllerStudent: Symbol("ControllerStudent"),
   ServiceStudent: Symbol("ServiceStudent"),

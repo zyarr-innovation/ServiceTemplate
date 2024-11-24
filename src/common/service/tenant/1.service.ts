@@ -2,18 +2,20 @@ import { inject, injectable } from "inversify";
 import { Sequelize, Transaction } from "sequelize";
 import jwt from "jsonwebtoken";
 
+import TYPES from "../../../ioc/types";
+import { container } from "../../../ioc/container";
+
 import { ILogger } from "../Logger/0.model";
 import { ITenant } from "./0.model";
 import { initModels } from "../../../ioc/init-models";
 
-import { log } from "console";
-
 @injectable()
 export class ServiceTenant {
+  private logger: ILogger;
   private tenantData: { [tenantId: string]: ITenant } = {};
 
-  constructor(private logger: ILogger) {
-    this.logger = logger;
+  constructor() {
+    this.logger = container.get(TYPES.LoggerService);
   }
 
   storeTenantConfiguration(tenantList: ITenant[]) {
