@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from "express";
+import { ILogger } from "../Logger/0.model";
 import { CONSTANT } from "../../constant/constant";
-import { injectable, inject } from "inversify";
-import TYPES from "../../../ioc/types";
 
 import { ServiceTenant } from "../tenant/1.service";
 import { IRequestHeaders } from "../../utility/common-headers";
@@ -11,10 +10,10 @@ import { RequestContextProvider } from "../RequestContext/service";
 import { RequestContext } from "../RequestContext/model";
 import { validateHeaders } from "../../validator-header";
 
-@injectable()
 export class MiddlewareProvider {
-  @inject(TYPES.ServiceTenant)
-  private tenantService!: ServiceTenant;
+  constructor(private logger: ILogger, private tenantService: ServiceTenant) {
+    this.tenantService = tenantService;
+  }
 
   // Middleware to handle exception and modify response body
   public middlewareException(req: Request, res: Response, next: NextFunction) {

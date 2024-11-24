@@ -1,23 +1,19 @@
-import "reflect-metadata";
 import { inject } from "inversify";
 import sequelize from "sequelize";
 import dotenv from "dotenv";
 dotenv.config({ path: `${__dirname}/../.env` });
 
-import { LoggerService } from "../service/Logger/1.service";
 import { Application } from "express";
 import http, { Server as HttpServer } from "http";
-import app from "../app";
+import { App } from "../app";
+import { LoggerService } from "../service/Logger/1.service";
 import { serverConfig } from "./0.server-config";
 import { ServerHealth } from "./2.server-health";
 import { ServiceTenant } from "../service/tenant/1.service";
 import { ILogger } from "../service/Logger/0.model";
 
 export class Server {
-  @inject(LoggerService)
-  private logger!: ILogger;
-
-  @inject(ServiceTenant)
+  private logger: ILogger;
   private tenantService!: ServiceTenant;
 
   private app: Application;
@@ -26,7 +22,10 @@ export class Server {
   private isServerRunning: boolean = false;
 
   constructor() {
-    this.app = new app().init();
+    this.logger = new LoggerService();
+    this.tenantService = new ServiceTenant(this.logger);
+
+    this.app = new App(this.logger, this.tenantService).init();
     this.server = http.createServer(this.app);
     this.healthServer = new ServerHealth(this.logger);
   }

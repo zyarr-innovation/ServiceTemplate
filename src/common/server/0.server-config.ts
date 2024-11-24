@@ -56,7 +56,6 @@ function readTenantConfiguration(): ITenant[] {
 
   for (let i = 1; i <= tenantCount; i++) {
     if (
-      !process.env[`TENANT_${i}_ID`] ||
       !process.env[`TENANT_${i}_NAME`] ||
       !process.env[`TENANT_${i}_AUTH_SERVER`] ||
       !process.env[`TENANT_${i}_CLIENT_ID`] ||

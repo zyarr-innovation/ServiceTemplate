@@ -1,5 +1,6 @@
+import "reflect-metadata";
 import dotenv from "dotenv";
-dotenv.config({ path: `${__dirname}/env` });
+dotenv.config({ path: `${__dirname}/.env` });
 
 import { serverConfig } from "./common/server/0.server-config";
 import { Server } from "./common/server/1.server";

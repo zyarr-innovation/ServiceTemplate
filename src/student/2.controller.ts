@@ -20,14 +20,19 @@ import { validateHeaders } from "../common/validator-header";
 import { IStudent } from "./0.model";
 import { validateStudent } from "./1.validator";
 import { IServiceStudent } from "./3.service.model";
+import { ILogger } from "../common/service/Logger/0.model";
 
 @controller("/student")
 export class ControllerStudent extends BaseController {
-  constructor(
-    @inject(TYPES.ServiceLogger) protected logger: LoggerService,
-    @inject(TYPES.ServiceStudent) protected serviceStudent: IServiceStudent
-  ) {
+  @inject(TYPES.ServiceLogger)
+  private logger!: ILogger;
+
+  @inject(TYPES.ServiceStudent)
+  private serviceStudent!: IServiceStudent;
+
+  constructor() {
     super();
+    console.log(this.logger);
   }
 
   // Middleware to handle headers and set common response headers

@@ -1,4 +1,3 @@
-import "reflect-metadata";
 import express, { Application } from "express";
 import cors from "cors";
 import helmet from "helmet";
@@ -7,30 +6,23 @@ import dotenv from "dotenv";
 
 import { serverConfig } from "./server/0.server-config";
 import { container } from "../ioc/container";
-import { LoggerService } from "./service/Logger/1.service";
 import { MiddlewareProvider } from "./service/middleware/service";
-import { inject } from "inversify";
 import { InversifyExpressServer } from "inversify-express-utils";
+import { ILogger } from "./service/Logger/0.model";
+import { ServiceTenant } from "./service/tenant/1.service";
 
-export default class App {
-  @inject(MiddlewareProvider)
-  middlewareService!: MiddlewareProvider;
+export class App {
+  middlewareService: MiddlewareProvider;
 
-  @inject(LoggerService)
-  private logger!: LoggerService;
-
-  constructor() {}
+  constructor(private logger: ILogger, tenantService: ServiceTenant) {
+    this.middlewareService = new MiddlewareProvider(logger, tenantService);
+  }
 
   public init(): Application {
     const app: Application = express();
-    const server = new InversifyExpressServer(
-      container,
-      null,
-      { rootPath: "/v1" },
-      null,
-      null,
-      false
-    );
+    const server = new InversifyExpressServer(container, null, {
+      rootPath: "/v1",
+    });
 
     server.setConfig((app: Application) => {
       app.use(express.json({ limit: serverConfig.limit }));

@@ -1,16 +1,20 @@
 import { inject, injectable } from "inversify";
-import { LoggerService } from "../Logger/1.service";
-import { ITenant } from "./0.model";
 import { Sequelize, Transaction } from "sequelize";
 import jwt from "jsonwebtoken";
+
+import { ILogger } from "../Logger/0.model";
+import { ITenant } from "./0.model";
 import { initModels } from "../../../ioc/init-models";
+
+import { log } from "console";
 
 @injectable()
 export class ServiceTenant {
-  @inject(LoggerService)
-  protected logger!: LoggerService;
-
   private tenantData: { [tenantId: string]: ITenant } = {};
+
+  constructor(private logger: ILogger) {
+    this.logger = logger;
+  }
 
   storeTenantConfiguration(tenantList: ITenant[]) {
     tenantList.forEach((tenant) => {
@@ -45,6 +49,7 @@ export class ServiceTenant {
       }
     } catch (error: any) {
       this.logger.error(`Failed to connect the database: ${error.message}`);
+      throw error;
     }
   }
 

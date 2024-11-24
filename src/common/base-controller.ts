@@ -1,18 +1,14 @@
 import express from "express";
 import { inject, injectable } from "inversify";
 
-import { HttpStatusCode } from "./constant/http-status-code";
 import TYPES from "../ioc/types";
-import { LoggerService } from "./service/Logger/1.service";
+import { HttpStatusCode } from "./constant/http-status-code";
+import { ILogger } from "./service/Logger/0.model";
 
-@injectable()
 export class BaseController {
-  @inject(TYPES.ServiceLogger)
-  protected logger!: LoggerService;
+  constructor() {}
 
   public handleError(err: Error, res: express.Response) {
-    this.logger.error(err);
-
     let errorCode = HttpStatusCode.INTERNAL_SERVER_ERROR;
     let errorMessage = err.message || "Internal Server Error";
 

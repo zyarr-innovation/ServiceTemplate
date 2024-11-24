@@ -9,7 +9,9 @@ export class ServiceStudentImpl implements IServiceStudent {
   @inject(TYPE.RepoStudent)
   private repoService!: IRepoStudent;
 
-  constructor() {}
+  constructor() {
+    console.log(this.repoService);
+  }
 
   async get(studentId: number): Promise<IStudent | null> {
     const retObject = await this.repoService.getById(studentId);

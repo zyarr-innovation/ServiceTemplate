@@ -1,8 +1,8 @@
 import winston from "winston";
 import { injectable } from "inversify";
+import { ILogger } from "./0.model";
 import { formatUTCTime } from "../../utility/date-helper";
 import { serverConfig } from "../../server/0.server-config";
-import { ILogger } from "./0.model";
 
 @injectable()
 export class LoggerService implements ILogger {
