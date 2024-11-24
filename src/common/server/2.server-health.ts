@@ -47,7 +47,7 @@ export class ServerHealth {
           this.status = ServiceStatus.Started;
           resolve(this.server);
         })
-        .on("error", (err) => {
+        .on("error", (err: any) => {
           this.logger.error("FAILED: Health Server Start:" + err);
           reject(err);
         });
@@ -57,7 +57,7 @@ export class ServerHealth {
   public async stop(): Promise<void> {
     if (this.server) {
       return new Promise((resolve, reject) => {
-        this.server.close((err) => {
+        this.server.close((err: any) => {
           if (err) {
             this.logger.error("Error closing server: " + err);
             return reject(err);
