@@ -1,7 +1,6 @@
 import winston from "winston";
 import { injectable } from "inversify";
 import { ILogger } from "./0.model";
-import { formatUTCTime } from "../../utility/date-helper";
 import { serverConfig } from "../../server/0.server-config";
 
 @injectable()
@@ -13,10 +12,20 @@ export class LoggerService implements ILogger {
   }
 
   private initialize() {
+    const formatCustomTimestamp = () => {
+      const now = new Date();
+      const pad = (num: any) => String(num).padStart(2, "0");
+      return `${String(now.getFullYear())}-${pad(now.getMonth() + 1)}-${pad(
+        now.getDate()
+      )} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(
+        now.getSeconds()
+      )}`;
+    };
+
     return winston.createLogger({
       format: winston.format.combine(
         winston.format.timestamp({
-          format: formatUTCTime(serverConfig.log.timeFormat ?? "yyyy-MM-dd"),
+          format: formatCustomTimestamp(),
         }),
         winston.format.printf(
           (info) => `${info.timestamp}: ${info.level} => ${info.message}`
@@ -36,10 +45,10 @@ export class LoggerService implements ILogger {
   }
 
   warn(message: any) {
-    this.logger.warn("WARNING => " + message);
+    this.logger.warn(message);
   }
 
   error(message: any) {
-    this.logger.error("ERROR => " + message);
+    this.logger.error(message);
   }
 }
