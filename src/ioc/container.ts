@@ -2,10 +2,10 @@ import { Container } from "inversify";
 import TYPES from "./types";
 
 import { BaseController } from "../common/base-controller";
-import { ILogger } from "../common/service/Logger/model";
-import { LoggerService } from "../common/service/Logger/service";
+import { ILogger } from "../common/service/logger/model";
+import { LoggerService } from "../common/service/logger/service";
 import { ServiceTenant } from "../common/service/tenant/service";
-import { RequestContextProvider } from "../common/service/RequestContext/service";
+import { RequestContextProvider } from "../common/service/request-context/service";
 import { MiddlewareProvider } from "../common/service/middleware/service";
 
 import { ControllerStudent } from "../student/2.controller";

@@ -10,7 +10,7 @@ import TYPES from "../../ioc/types";
 
 import { MiddlewareProvider } from "../service/middleware/service";
 import { InversifyExpressServer } from "inversify-express-utils";
-import { ILogger } from "../service/Logger/model";
+import { ILogger } from "../service/logger/model";
 import { ServiceTenant } from "../service/tenant/service";
 
 export class App {

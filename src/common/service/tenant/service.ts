@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken";
 import TYPES from "../../../ioc/types";
 import { container } from "../../../ioc/container";
 
-import { ILogger } from "../Logger/model";
+import { ILogger } from "../logger/model";
 import { ITenant } from "./model";
 import { initModels } from "../../../ioc/init-models";
 

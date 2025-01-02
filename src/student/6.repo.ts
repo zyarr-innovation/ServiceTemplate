@@ -3,7 +3,7 @@ import { injectable } from "inversify";
 import { IStudent } from "./0.model";
 import { IRepoStudent } from "./5.repo.model";
 import { DTOStudent } from "./7.dto.model";
-import { RequestContextProvider } from "../common/service/RequestContext/service";
+import { RequestContextProvider } from "../common/service/request-context/service";
 import { container } from "../ioc/container";
 
 @injectable()

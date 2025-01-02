@@ -2,14 +2,13 @@ import { Request, Response, NextFunction } from "express";
 import TYPES from "../../../ioc/types";
 import { container } from "../../../ioc/container";
 
-import { ILogger } from "../Logger/model";
+import { ILogger } from "../logger/model";
 import { CONSTANT } from "../../constant/constant";
 
 import { ServiceTenant } from "../tenant/service";
-import { IRequestHeaders } from "../../utility/common-headers";
 import { HttpStatusCode } from "../../constant/http-status-code";
-import { RequestContextProvider } from "../RequestContext/service";
-import { RequestContext } from "../RequestContext/model";
+import { RequestContextProvider } from "../request-context/service";
+import { RequestContext } from "../request-context/model";
 import { validateHeaders } from "../../validator-header";
 
 export class MiddlewareProvider {
@@ -93,7 +92,8 @@ export class MiddlewareProvider {
 
   // Extract token from the request headers
   private extractToken(req: Request): string {
-    return (req.headers["authorization"]?.replace("bearer ", "") ?? "") as string;
+    return (req.headers["authorization"]?.replace("bearer ", "") ??
+      "") as string;
   }
 
   // Setup request context with tenant information
@@ -101,7 +101,7 @@ export class MiddlewareProvider {
     req: Request,
     tenantId: string
   ): Promise<void> {
-    const requestHeaders: IRequestHeaders = {
+    const requestHeaders = {
       tenantid: tenantId,
       traceparent: req.headers["traceparent"] as string,
       authorization: req.headers["authorization"] as string,

@@ -33,6 +33,7 @@
     "morgan": "^1.10.0",
     "path": "^0.12.7",
     "reflect-metadata": "^0.2.2",
+    "rimraf": "^6.0.1",
     "sequelize": "^6.37.5",
     "typescript-ioc": "^3.2.2",
     "typescript-rest": "^3.0.4",
