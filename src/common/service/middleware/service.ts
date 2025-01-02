@@ -2,10 +2,10 @@ import { Request, Response, NextFunction } from "express";
 import TYPES from "../../../ioc/types";
 import { container } from "../../../ioc/container";
 
-import { ILogger } from "../Logger/0.model";
+import { ILogger } from "../Logger/model";
 import { CONSTANT } from "../../constant/constant";
 
-import { ServiceTenant } from "../tenant/1.service";
+import { ServiceTenant } from "../tenant/service";
 import { IRequestHeaders } from "../../utility/common-headers";
 import { HttpStatusCode } from "../../constant/http-status-code";
 import { RequestContextProvider } from "../RequestContext/service";
@@ -31,7 +31,7 @@ export class MiddlewareProvider {
     const originalSend = res.send;
     res.send = function (data) {
       try {
-        if (res && res.statusCode && data) {
+        if (res?.statusCode && data) {
           const resBody = JSON.parse(data);
           if (resBody?.Error) {
             data = { code: res.statusCode, error: resBody.Error };
@@ -54,7 +54,6 @@ export class MiddlewareProvider {
     try {
       // Validate headers
       validateHeaders(req, res, async () => {
-        // Extract and validate tenant info from headers
         const tenantId = await this.extractTenantId(req);
         if (!tenantId) {
           return next({
@@ -63,17 +62,14 @@ export class MiddlewareProvider {
           });
         }
 
-        // Validate tenant existence
-        if (!(await this.isValidTenant(tenantId))) {
-          return next({
-            code: HttpStatusCode.FORBIDDEN,
-            message: CONSTANT.MESSAGE.ACCESS_DENIED,
-          });
-        }
-
-        // Validate token
+        // Validate tenant existence and token
         const token = this.extractToken(req);
-        if (!(await this.isValidToken(tenantId, token))) {
+        const [isValidTenant, isValidToken] = await Promise.all([
+          this.tenantService.isValidTenant(tenantId),
+          this.tenantService.verifyToken(tenantId, token),
+        ]);
+
+        if (!isValidTenant || !isValidToken) {
           return next({
             code: HttpStatusCode.FORBIDDEN,
             message: CONSTANT.MESSAGE.ACCESS_DENIED,
@@ -95,23 +91,9 @@ export class MiddlewareProvider {
     return (req.headers["tenantid"] as string) ?? null;
   }
 
-  // Check if the tenant is valid
-  private async isValidTenant(tenantId: string): Promise<boolean> {
-    return this.tenantService.isValidTenant(tenantId);
-  }
-
   // Extract token from the request headers
   private extractToken(req: Request): string {
-    return (req.headers["authorization"]?.replace("bearer ", "") ??
-      "") as string;
-  }
-
-  // Validate the token for the tenant
-  private async isValidToken(
-    tenantId: string,
-    token: string
-  ): Promise<boolean> {
-    return this.tenantService.verifyToken(tenantId, token);
+    return (req.headers["authorization"]?.replace("bearer ", "") ?? "") as string;
   }
 
   // Setup request context with tenant information

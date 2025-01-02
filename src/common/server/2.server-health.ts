@@ -2,28 +2,13 @@ import { createTerminus, TerminusOptions } from "@godaddy/terminus";
 import express from "express";
 import http, { Server } from "http";
 import { ServiceStatus } from "../constant/constant";
-import { ILogger } from "../service/Logger/0.model";
+import { ILogger } from "../service/Logger/model";
 
 export class ServerHealth {
   private server!: Server;
   private status: ServiceStatus = ServiceStatus.Ready;
 
   constructor(private logger: ILogger) {}
-
-  private async isStatus(
-    expectedStatus: ServiceStatus,
-    shouldMatch: boolean
-  ): Promise<void> {
-    if (
-      (shouldMatch && this.status === expectedStatus) ||
-      (!shouldMatch && this.status !== expectedStatus)
-    ) {
-      return Promise.resolve();
-    }
-    return Promise.reject(
-      new Error(`Error in service: Status => ${expectedStatus}`)
-    );
-  }
 
   public async start(port: number): Promise<Server> {
     const options: TerminusOptions = {
@@ -71,12 +56,18 @@ export class ServerHealth {
     return Promise.resolve();
   }
 
-  public getStatus(): ServiceStatus {
-    return this.status;
-  }
-
-  public setStatus(status: ServiceStatus): void {
-    this.status = status;
-    this.logger.info(`Health Server Status => ${status}`);
+  private async isStatus(
+    expectedStatus: ServiceStatus,
+    shouldMatch: boolean
+  ): Promise<void> {
+    if (
+      (shouldMatch && this.status === expectedStatus) ||
+      (!shouldMatch && this.status !== expectedStatus)
+    ) {
+      return Promise.resolve();
+    }
+    return Promise.reject(
+      new Error(`Error in service: Status => ${expectedStatus}`)
+    );
   }
 }

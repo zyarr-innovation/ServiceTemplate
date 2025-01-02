@@ -1,6 +1,7 @@
-import { ITenant } from "../service/tenant/0.model";
+import { ITenant } from "../service/tenant/model";
+import { getEnvVariable, validateEnvVariables } from "../utility/env-utils";
 
-const options = {
+const DEFAULT_OPTIONS = {
   dialect: "mysql",
   pool: {
     max: 10,
@@ -10,14 +11,12 @@ const options = {
   },
 };
 
-const tenantList: ITenant[] = readTenantConfiguration();
-
 const serverConfig = {
   serviceName: "student-service",
-  environment: "development",
-  port: process.env.PORT || "3000",
-  healthPort: process.env.HEALTH_PORT || "3001",
-  limit: process.env.REQUEST_PAYLOAD_LIMIT || "1mb",
+  environment: process.env.NODE_ENV || "development",
+  port: getEnvVariable("PORT", "3000"),
+  healthPort: getEnvVariable("HEALTH_PORT", "3001"),
+  limit: getEnvVariable("REQUEST_PAYLOAD_LIMIT", "1mb"),
 
   corsOption: {
     origin: process.env.CORSURL,
@@ -38,8 +37,8 @@ const serverConfig = {
   },
 
   log: {
-    level: process.env.LOG_LEVEL || "debug",
-    timeFormat: process.env.TIMESTAMP_FORMAT || "yyyy-mm-dd",
+    level: getEnvVariable("LOG_LEVEL", "debug"),
+    timeFormat: getEnvVariable("TIMESTAMP_FORMAT", "yyyy-mm-dd"),
   },
 
   STRICT_TRANSPORT_SECURITY: "Strict-Transport-Security",
@@ -47,50 +46,61 @@ const serverConfig = {
   CONTENT_TYPE: "Content-Type=application/json",
   CLIENT_PATH: "dashboard",
 
-  tenantList: tenantList,
+  tenantList: readTenantConfiguration(),
 };
 
 function readTenantConfiguration(): ITenant[] {
-  const tenantList: ITenant[] = [];
-  const tenantCount = 1; // Adjust based on number of tenants
+  const tenantCount = parseInt(getEnvVariable("TENANT_COUNT", "1"), 10);
+  const tenants: ITenant[] = [];
 
   for (let i = 1; i <= tenantCount; i++) {
-    if (
-      !process.env[`TENANT_${i}_NAME`] ||
-      !process.env[`TENANT_${i}_AUTH_SERVER`] ||
-      !process.env[`TENANT_${i}_CLIENT_ID`] ||
-      !process.env[`TENANT_${i}_CLIENT_SECRET`] ||
-      !process.env[`TENANT_${i}_DB_URI`] ||
-      !process.env[`TENANT_${i}_DB_USERNAME`] ||
-      !process.env[`TENANT_${i}_DB_PASSWORD`]
-    ) {
-      throw new Error("Incomplete configuration. Check environment");
-    }
+    const tenantEnvPrefix = `TENANT_${i}`;
+    validateEnvVariables([
+      `${tenantEnvPrefix}_NAME`,
+      `${tenantEnvPrefix}_AUTH_SERVER`,
+      `${tenantEnvPrefix}_CLIENT_ID`,
+      `${tenantEnvPrefix}_CLIENT_SECRET`,
+      `${tenantEnvPrefix}_DB_URI`,
+      `${tenantEnvPrefix}_DB_USERNAME`,
+      `${tenantEnvPrefix}_DB_PASSWORD`,
+    ]);
 
-    tenantList.push({
+    tenants.push({
       id: i,
-      name: process.env[`TENANT_${i}_NAME`] || "",
+      name: process.env[`${tenantEnvPrefix}_NAME`] || "",
       authentication: {
-        authServer: process.env[`TENANT_${i}_AUTH_SERVER`] || "",
-        clientId: process.env[`TENANT_${i}_CLIENT_ID`] || "",
-        clientSecret: process.env[`TENANT_${i}_CLIENT_SECRET`] || "",
+        authServer: process.env[`${tenantEnvPrefix}_AUTH_SERVER`] || "",
+        clientId: process.env[`${tenantEnvPrefix}_CLIENT_ID`] || "",
+        clientSecret: process.env[`${tenantEnvPrefix}_CLIENT_SECRET`] || "",
       },
       database: {
-        sqlDBName: process.env[`TENANT_${i}_NAME`] || "",
-        connectionUri: process.env[`TENANT_${i}_DB_URI`] || "",
-        username: process.env[`TENANT_${i}_DB_USERNAME`] || "",
-        password: process.env[`TENANT_${i}_DB_PASSWORD`] || "",
+        sqlDBName: process.env[`${tenantEnvPrefix}_NAME`] || "",
+        connectionUri: process.env[`${tenantEnvPrefix}_DB_URI`] || "",
+        username: process.env[`${tenantEnvPrefix}_DB_USERNAME`] || "",
+        password: process.env[`${tenantEnvPrefix}_DB_PASSWORD`] || "",
         options: {
-          dialect: process.env[`TENANT_${i}_DB_DIALECT`] || "mysql",
+          dialect:
+            process.env[`${tenantEnvPrefix}_DB_DIALECT`] ||
+            DEFAULT_OPTIONS.dialect,
           pool: {
-            max: parseInt(process.env[`TENANT_${i}_DB_POOL_MAX`] || "10", 10),
-            min: parseInt(process.env[`TENANT_${i}_DB_POOL_MIN`] || "0", 10),
+            max: parseInt(
+              process.env[`${tenantEnvPrefix}_DB_POOL_MAX`] ||
+                DEFAULT_OPTIONS.pool.max.toString(),
+              10
+            ),
+            min: parseInt(
+              process.env[`${tenantEnvPrefix}_DB_POOL_MIN`] ||
+                DEFAULT_OPTIONS.pool.min.toString(),
+              10
+            ),
             acquire: parseInt(
-              process.env[`TENANT_${i}_DB_POOL_ACQUIRE`] || "30000",
+              process.env[`${tenantEnvPrefix}_DB_POOL_ACQUIRE`] ||
+                DEFAULT_OPTIONS.pool.acquire.toString(),
               10
             ),
             idle: parseInt(
-              process.env[`TENANT_${i}_DB_POOL_IDLE`] || "10000",
+              process.env[`${tenantEnvPrefix}_DB_POOL_IDLE`] ||
+                DEFAULT_OPTIONS.pool.idle.toString(),
               10
             ),
           },
@@ -100,6 +110,7 @@ function readTenantConfiguration(): ITenant[] {
     });
   }
 
-  return tenantList;
+  return tenants;
 }
+
 export { serverConfig };

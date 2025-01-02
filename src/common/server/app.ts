@@ -10,11 +10,11 @@ import TYPES from "../../ioc/types";
 
 import { MiddlewareProvider } from "../service/middleware/service";
 import { InversifyExpressServer } from "inversify-express-utils";
-import { ILogger } from "../service/Logger/0.model";
-import { ServiceTenant } from "../service/tenant/1.service";
+import { ILogger } from "../service/Logger/model";
+import { ServiceTenant } from "../service/tenant/service";
 
 export class App {
-  middlewareService: MiddlewareProvider;
+  private middlewareService: MiddlewareProvider;
   private logger: ILogger;
 
   constructor() {
@@ -43,7 +43,7 @@ export class App {
     return server.build();
   }
 
-  private initSecurity(app: Application) {
+  private initSecurity(app: Application): void {
     app.use(cors(serverConfig.corsOption));
     app.use(helmet());
     app.use(this.middlewareService.middlewareValidateTenant);

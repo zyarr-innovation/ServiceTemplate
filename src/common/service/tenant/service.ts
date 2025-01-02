@@ -1,3 +1,4 @@
+// tenant/service.ts
 import { inject, injectable } from "inversify";
 import { Sequelize, Transaction } from "sequelize";
 import jwt from "jsonwebtoken";
@@ -5,8 +6,8 @@ import jwt from "jsonwebtoken";
 import TYPES from "../../../ioc/types";
 import { container } from "../../../ioc/container";
 
-import { ILogger } from "../Logger/0.model";
-import { ITenant } from "./0.model";
+import { ILogger } from "../Logger/model";
+import { ITenant } from "./model";
 import { initModels } from "../../../ioc/init-models";
 
 @injectable()
@@ -30,25 +31,26 @@ export class ServiceTenant {
   }
 
   isValidTenant(tenantId: string) {
-    return this.tenantData[tenantId] != null;
+    return Boolean(this.tenantData[tenantId]);
   }
 
   async connect() {
     try {
-      for (const [tenantId, tenant] of Object.entries(this.tenantData)) {
-        const databaseConnection = new Sequelize(
-          tenant.database.connectionUri,
-          {
-            username: tenant.database.username,
-            password: tenant.database.password,
-            dialect: tenant.database.options.dialect as any,
-            pool: tenant.database.options.pool,
-          }
-        );
-        await databaseConnection.authenticate();
-        await initModels(tenant.name, databaseConnection);
-        this.tenantData[tenantId].database.connection = databaseConnection;
-      }
+      await Promise.all(
+        Object.entries(this.tenantData).map(async ([tenantId, tenant]) => {
+          const { connectionUri, username, password, options } =
+            tenant.database;
+          const databaseConnection = new Sequelize(connectionUri, {
+            username,
+            password,
+            dialect: options.dialect as any,
+            pool: options.pool,
+          });
+          await databaseConnection.authenticate();
+          await initModels(tenant.name, databaseConnection);
+          this.tenantData[tenantId].database.connection = databaseConnection;
+        })
+      );
     } catch (error: any) {
       this.logger.error(`Failed to connect the database: ${error.message}`);
       throw error;
@@ -57,25 +59,29 @@ export class ServiceTenant {
 
   async disconnect() {
     try {
-      for (const [tenantId, tenant] of Object.entries(this.tenantData)) {
-        if (this.tenantData[tenantId].database.connection) {
-          this.tenantData[tenantId].database.connection.close();
-        }
-      }
+      await Promise.all(
+        Object.entries(this.tenantData).map(async ([tenantId, tenant]) => {
+          const { connection } = tenant.database;
+          if (connection) {
+            await connection.close();
+          }
+        })
+      );
     } catch (error: any) {
       this.logger.error(`Failed to disconnect the database: ${error.message}`);
     }
   }
 
   getTenantName(tenantId: string) {
-    return this.tenantData[tenantId].name;
+    return this.tenantData[tenantId]?.name || null;
   }
+
   getConnection(tenantId: string) {
-    return this.tenantData[tenantId].database.connection;
+    return this.tenantData[tenantId]?.database?.connection || null;
   }
 
   async executeTransaction(tenantId: string) {
-    const connection = this.tenantData[tenantId]?.database?.connection;
+    const connection = this.getConnection(tenantId);
     if (!connection) {
       throw new Error("Database connection not available for the tenant");
     }

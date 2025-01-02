@@ -10,7 +10,7 @@ import {
   response,
 } from "inversify-express-utils";
 
-import { LoggerService } from "../common/service/Logger/1.service";
+import { LoggerService } from "../common/service/Logger/service";
 import TYPES from "../ioc/types";
 import { container } from "../ioc/container";
 
@@ -21,7 +21,7 @@ import { validateHeaders } from "../common/validator-header";
 import { IStudent } from "./0.model";
 import { validateStudent } from "./1.validator";
 import { IServiceStudent } from "./3.service.model";
-import { ILogger } from "../common/service/Logger/0.model";
+import { ILogger } from "../common/service/Logger/model";
 
 @controller("/student")
 export class ControllerStudent extends BaseController {

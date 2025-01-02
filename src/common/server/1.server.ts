@@ -1,5 +1,5 @@
+// server.ts
 import { inject } from "inversify";
-import sequelize from "sequelize";
 import dotenv from "dotenv";
 dotenv.config({ path: `${__dirname}/../.env` });
 import TYPES from "../../ioc/types";
@@ -8,11 +8,11 @@ import { container } from "../../ioc/container";
 import { Application } from "express";
 import http, { Server as HttpServer } from "http";
 import { App } from "./app";
-import { LoggerService } from "../service/Logger/1.service";
+import { LoggerService } from "../service/Logger/service";
 import { serverConfig } from "./0.server-config";
 import { ServerHealth } from "./2.server-health";
-import { ServiceTenant } from "../service/tenant/1.service";
-import { ILogger } from "../service/Logger/0.model";
+import { ServiceTenant } from "../service/tenant/service";
+import { ILogger } from "../service/Logger/model";
 
 export class Server {
   private logger: ILogger;
@@ -21,7 +21,7 @@ export class Server {
   private app: Application;
   private server!: HttpServer;
   private healthServer!: ServerHealth;
-  private isServerRunning: boolean = false;
+  private isServerRunning = false;
 
   constructor() {
     this.logger = container.get(TYPES.LoggerService);

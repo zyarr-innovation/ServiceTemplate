@@ -1,44 +1,39 @@
 import express from "express";
-import { inject, injectable } from "inversify";
-
-import TYPES from "../ioc/types";
 import { HttpStatusCode } from "./constant/http-status-code";
-import { ILogger } from "./service/Logger/0.model";
 
 export class BaseController {
-  constructor() {}
-
   public handleError(err: Error, res: express.Response) {
-    let errorCode = HttpStatusCode.INTERNAL_SERVER_ERROR;
-    let errorMessage = err.message || "Internal Server Error";
+    const errorResponse = {
+      status: "error",
+      code: HttpStatusCode.INTERNAL_SERVER_ERROR,
+      message: "Internal Server Error",
+    };
 
     if (err instanceof Error) {
-      switch (err.name) {
-        case "SequelizeUniqueConstraintError":
-          errorCode = HttpStatusCode.CONFLICT_RESOURCE_ALREADY_EXISTS;
-          errorMessage = "Resource already exists.";
-          break;
-        case "ValidationError":
-          errorCode = HttpStatusCode.BAD_REQUEST;
-          errorMessage = "Invalid data provided.";
-          break;
-        case "NotFoundError":
-          errorCode = HttpStatusCode.NOT_FOUND;
-          errorMessage = "Resource not found.";
-          break;
-        // Add additional error handling as needed
-        default:
-          errorCode = HttpStatusCode.INTERNAL_SERVER_ERROR;
-          errorMessage = err.message;
-          break;
+      const errorMap: { [key: string]: { code: number; message: string } } = {
+        SequelizeUniqueConstraintError: {
+          code: HttpStatusCode.CONFLICT_RESOURCE_ALREADY_EXISTS,
+          message: "Resource already exists.",
+        },
+        ValidationError: {
+          code: HttpStatusCode.BAD_REQUEST,
+          message: "Invalid data provided.",
+        },
+        NotFoundError: {
+          code: HttpStatusCode.NOT_FOUND,
+          message: "Resource not found.",
+        },
+      };
+
+      const mappedError = errorMap[err.name];
+      if (mappedError) {
+        errorResponse.code = mappedError.code;
+        errorResponse.message = mappedError.message;
+      } else {
+        errorResponse.message = err.message;
       }
     }
 
-    // Send back the error response
-    return res.status(errorCode).json({
-      status: "error",
-      code: errorCode,
-      message: errorMessage,
-    });
+    return res.status(errorResponse.code).json(errorResponse);
   }
 }
