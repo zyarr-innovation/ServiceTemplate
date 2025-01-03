@@ -10,18 +10,18 @@ import {
   response,
 } from "inversify-express-utils";
 
-import { LoggerService } from "../common/service/logger/service";
+import { ILogger, LoggerService } from "../common/service/logger.service";
 import TYPES from "../ioc/types";
 import { container } from "../ioc/container";
 
 import { BaseController } from "../common/base-controller";
 import { HttpStatusCode } from "../common/constant/http-status-code";
-import { validateHeaders } from "../common/validator-header";
+import { validateId } from "../common/validator-id";
 
 import { IStudent } from "./0.model";
 import { validateStudent } from "./1.validator";
 import { IServiceStudent } from "./3.service.model";
-import { ILogger } from "../common/service/logger/model";
+
 
 @controller("/student")
 export class ControllerStudent extends BaseController {
@@ -42,7 +42,7 @@ export class ControllerStudent extends BaseController {
     );
   }
 
-  @httpGet("/", validateHeaders, validateStudent)
+  @httpGet("/", validateId)
   async get(@request() req: Request, @response() res: Response) {
     try {
       const student = await this.serviceStudent.get(req.body);
@@ -54,7 +54,7 @@ export class ControllerStudent extends BaseController {
     }
   }
 
-  @httpPost("/", validateHeaders, validateStudent)
+  @httpPost("/", validateStudent)
   async create(@request() req: Request, @response() res: Response) {
     try {
       const status = await this.serviceStudent.create(req.body);
@@ -66,7 +66,7 @@ export class ControllerStudent extends BaseController {
     }
   }
 
-  @httpPatch("/", validateHeaders, validateStudent)
+  @httpPatch("/", validateId, validateStudent)
   async update(@request() req: Request, @response() res: Response) {
     try {
       const status = await this.serviceStudent.update(req.body);
@@ -78,7 +78,7 @@ export class ControllerStudent extends BaseController {
     }
   }
 
-  @httpDelete("/", validateHeaders, validateStudent)
+  @httpDelete("/", validateId)
   async delete(@request() req: Request, @response() res: Response) {
     try {
       const status = await this.serviceStudent.delete(req.body);

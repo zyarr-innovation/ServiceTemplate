@@ -8,11 +8,10 @@ import { container } from "../../ioc/container";
 import { Application } from "express";
 import http, { Server as HttpServer } from "http";
 import { App } from "./app";
-import { LoggerService } from "../service/logger/service";
+import { ILogger, LoggerService } from "../service/logger.service";
 import { serverConfig } from "./0.server-config";
 import { ServerHealth } from "./2.server-health";
-import { ServiceTenant } from "../service/tenant/service";
-import { ILogger } from "../service/logger/model";
+import { ServiceTenant } from "../service/tenant.service";
 
 export class Server {
   private logger: ILogger;

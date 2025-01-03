@@ -2,7 +2,7 @@ import { createTerminus, TerminusOptions } from "@godaddy/terminus";
 import express from "express";
 import http, { Server } from "http";
 import { ServiceStatus } from "../constant/constant";
-import { ILogger } from "../service/logger/model";
+import { ILogger } from "../service/logger.service";
 
 export class ServerHealth {
   private server!: Server;

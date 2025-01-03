@@ -8,10 +8,10 @@ import { serverConfig } from "./0.server-config";
 import { container } from "../../ioc/container";
 import TYPES from "../../ioc/types";
 
-import { MiddlewareProvider } from "../service/middleware/service";
+import { MiddlewareProvider } from "../service/middleware.service";
 import { InversifyExpressServer } from "inversify-express-utils";
-import { ILogger } from "../service/logger/model";
-import { ServiceTenant } from "../service/tenant/service";
+import { ILogger } from "../service/logger.service";
+import { ServiceTenant } from "../service/tenant.service";
 
 export class App {
   private middlewareService: MiddlewareProvider;

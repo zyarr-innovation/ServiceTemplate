@@ -1,7 +1,13 @@
 import winston from "winston";
 import { injectable } from "inversify";
-import { ILogger } from "./model";
-import { serverConfig } from "../../server/0.server-config";
+import { serverConfig } from "../server/0.server-config";
+
+export interface ILogger {
+  info(message: any): void;
+  warn(message: any): void;
+  error(message: any): void;
+}
+
 
 @injectable()
 export class LoggerService implements ILogger {

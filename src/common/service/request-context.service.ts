@@ -1,6 +1,11 @@
 import { AsyncLocalStorage } from "async_hooks";
 import { injectable } from "inversify";
-import { RequestContext } from "./model";
+
+export class RequestContext {
+  tenantId: string | null = null;
+  traceparent: string | null = null;
+  databaseConnection: any | null = null;
+}
 
 @injectable()
 export class RequestContextProvider {

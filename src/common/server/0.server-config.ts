@@ -1,4 +1,4 @@
-import { ITenant } from "../service/tenant/model";
+import { ITenant } from "../service/tenant.service";
 import { getEnvVariable, validateEnvVariables } from "../utility/env-utils";
 
 const DEFAULT_OPTIONS = {
@@ -56,7 +56,7 @@ function readTenantConfiguration(): ITenant[] {
   for (let i = 1; i <= tenantCount; i++) {
     const tenantEnvPrefix = `TENANT_${i}`;
     validateEnvVariables([
-      `${tenantEnvPrefix}_NAME`,
+      `${tenantEnvPrefix}_ID`,
       `${tenantEnvPrefix}_AUTH_SERVER`,
       `${tenantEnvPrefix}_CLIENT_ID`,
       `${tenantEnvPrefix}_CLIENT_SECRET`,
@@ -66,8 +66,7 @@ function readTenantConfiguration(): ITenant[] {
     ]);
 
     tenants.push({
-      id: i,
-      name: process.env[`${tenantEnvPrefix}_NAME`] || "",
+      id: process.env[`${tenantEnvPrefix}_ID`] || "",
       authentication: {
         authServer: process.env[`${tenantEnvPrefix}_AUTH_SERVER`] || "",
         clientId: process.env[`${tenantEnvPrefix}_CLIENT_ID`] || "",

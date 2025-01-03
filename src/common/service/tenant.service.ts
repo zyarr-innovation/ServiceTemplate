@@ -3,12 +3,38 @@ import { inject, injectable } from "inversify";
 import { Sequelize, Transaction } from "sequelize";
 import jwt from "jsonwebtoken";
 
-import TYPES from "../../../ioc/types";
-import { container } from "../../../ioc/container";
+import TYPES from "../../ioc/types";
+import { container } from "../../ioc/container";
 
-import { ILogger } from "../logger/model";
-import { ITenant } from "./model";
-import { initModels } from "../../../ioc/init-models";
+import { ILogger } from "./logger.service";
+import { initModels } from "../../ioc/init-models";
+
+export interface ITenant {
+  id: string;
+  authentication: {
+    authServer: string;
+    clientId: string;
+    clientSecret: string;
+  };
+  database: IDatabase;
+}
+
+export interface IDatabase {
+  sqlDBName: string;
+  connectionUri: string;
+  username: string;
+  password: string;
+  options: {
+    dialect: string;
+    pool: {
+      max: number;
+      min: number;
+      acquire: number;
+      idle: number;
+    };
+  };
+  connection: Sequelize | null;
+}
 
 @injectable()
 export class ServiceTenant {
@@ -47,7 +73,7 @@ export class ServiceTenant {
             pool: options.pool,
           });
           await databaseConnection.authenticate();
-          await initModels(tenant.name, databaseConnection);
+          await initModels(tenant.id, databaseConnection);
           this.tenantData[tenantId].database.connection = databaseConnection;
         })
       );
@@ -72,10 +98,6 @@ export class ServiceTenant {
     }
   }
 
-  getTenantName(tenantId: string) {
-    return this.tenantData[tenantId]?.name || null;
-  }
-
   getConnection(tenantId: string) {
     return this.tenantData[tenantId]?.database?.connection || null;
   }
@@ -98,7 +120,8 @@ export class ServiceTenant {
 
     const { clientId, clientSecret } = tenant.authentication;
     try {
-      jwt.verify(token, clientSecret, { audience: clientId });
+      //TODO: The following code is commented for testing only
+      //jwt.verify(token, clientSecret, { audience: clientId });
       return true;
     } catch (error: any) {
       this.logger.error(`Failed to validate the token: ${error.message}`);

@@ -3,21 +3,19 @@ import { z } from "zod";
 import { handleValidationError } from "./validation-error";
 
 // Define the schema using zod
-const headerSchema = z.object({
-  tenantid: z.string().min(1, "tenantId is required"),
-  traceparent: z.string().min(1, "traceparent is required"),
-  authorization: z.string().min(1, "authorization is required"),
+const idSchema = z.object({
+  id: z.string().min(1, "Id is required"),
 });
 
 // Middleware for validating headers
-const validateHeaders = (
+const validateId = (
   request: Request,
   response: Response,
   next: NextFunction
 ) => {
   try {
     // Validate request headers
-    headerSchema.parse(request.headers);
+    idSchema.parse(request.headers);
     next();
   } catch (error) {
     // Use the common error handler
@@ -25,4 +23,4 @@ const validateHeaders = (
   }
 };
 
-export { validateHeaders };
+export { validateId };
