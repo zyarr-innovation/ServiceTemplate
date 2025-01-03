@@ -21,11 +21,12 @@ export class ServiceStudentImpl implements IServiceStudent {
     const retObject = await this.repoService.create(studentInfo);
     return retObject;
   }
-  async update(studentInfo: IStudent): Promise<IStudent | null> {
-    const retObject = await this.repoService.update(studentInfo);
+  async update(studentId: number, studentInfo: IStudent): Promise<number> {
+    const retObject = await this.repoService.update(studentId, studentInfo);
     return retObject;
   }
-  async delete(studentId: number) {
-    await this.repoService.delete(studentId);
+  async delete(studentId: number): Promise<number> {
+    const retObject = await this.repoService.delete(studentId);
+    return retObject;
   }
 }

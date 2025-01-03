@@ -37,8 +37,8 @@ export class RepoStudentImpl implements IRepoStudent {
     const foundObj = await StudentModel.findOne<DTOStudent>({
       where: { Id: inStudentId },
     });
-    if (foundObj) {
-      return this.convertToObject(foundObj);
+    if (foundObj?.dataValues) {
+      return this.convertToObject(foundObj?.dataValues);
     }
     return null;
   }
@@ -51,28 +51,34 @@ export class RepoStudentImpl implements IRepoStudent {
     const createdObj = await StudentModel.create(inStudent, {
       transaction,
     });
-    return this.convertToObject(createdObj);
+    return this.convertToObject(createdObj.dataValues);
   }
 
   async update(
+    studentId: number,
     inStudent: IStudent,
     transaction?: Transaction
-  ): Promise<IStudent | null> {
+  ): Promise<number> {
     const StudentModel = this.getModel(DTOStudent);
-    const [count, updatedObj] = await StudentModel.update(inStudent, {
-      where: { Id: inStudent.Id },
+
+    const [count] = await StudentModel.update(inStudent, {
+      where: { Id: studentId },
       transaction,
-      returning: true,
     });
-    return updatedObj.length ? this.convertToObject(updatedObj[0]) : null;
+
+    return count;
   }
 
-  async delete(inStudentId: number, transaction?: Transaction) {
+  async delete(
+    inStudentId: number,
+    transaction?: Transaction
+  ): Promise<number> {
     const StudentModel = this.getModel(DTOStudent);
-    await StudentModel.destroy({
+    const count = await StudentModel.destroy({
       where: { Id: inStudentId },
       transaction,
     });
+    return count;
   }
 
   convertToObject(srcObject: DTOStudent): IStudent {

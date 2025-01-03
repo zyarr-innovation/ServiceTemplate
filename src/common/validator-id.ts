@@ -14,8 +14,8 @@ const validateId = (
   next: NextFunction
 ) => {
   try {
-    // Validate request headers
-    idSchema.parse(request.headers);
+    const id = request.params.id; // Extracting id from URL
+    idSchema.parse({ id });
     next();
   } catch (error) {
     // Use the common error handler

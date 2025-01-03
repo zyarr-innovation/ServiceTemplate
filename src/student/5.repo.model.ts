@@ -11,9 +11,10 @@ export interface IRepoStudent {
     transaction?: Transaction
   ): Promise<IStudent | null>;
   update(
+    studentId: number,
     inStudent: IStudent,
     transaction?: Transaction
-  ): Promise<IStudent | null>;
-  delete(inStudentId: number, transaction?: Transaction): Promise<void>;
+  ): Promise<number>;
+  delete(inStudentId: number, transaction?: Transaction): Promise<number>;
   convertToObject(srcObject: DTOStudent): IStudent;
 }
