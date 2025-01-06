@@ -1,0 +1,41 @@
+POST http://localhost:3000/v1/student
+Content-Type: application/json
+tenantid: tenanta
+traceparent: 12345
+Authorization: bearer Token
+
+{
+  "name": "Arif Shaikh5",
+  "adhaar": "1234 1234 1238",
+  "school": "I Learning Online"
+}
+
+
+####
+GET http://localhost:3000/v1/student/5
+Content-Type: application/json
+tenantid: tenanta
+traceparent: 12345
+Authorization: bearer Token
+
+####
+PUT http://localhost:3000/v1/student/5
+Content-Type: application/json
+tenantid: tenanta
+traceparent: 12345
+Authorization: bearer Token
+
+{
+  "Id": 5,
+  "name": "Arif Shaikh500",
+  "adhaar": "1234 1234 1800",
+  "school": "I0 Learning Online0"
+}
+
+
+####
+DELETE http://localhost:3000/v1/student/4
+Content-Type: application/json
+tenantid: tenanta
+traceparent: 12345
+Authorization: bearer Token
