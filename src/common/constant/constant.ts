@@ -1,5 +1,6 @@
 export const CONSTANT = {
   MESSAGE: {
+    OK: "OK",
     ERROR: "SOME ERROR OCCURED",
     TENANT_ID_MISSING: "Tenant Id Missing",
     ACCESS_DENIED: "Access Denied",

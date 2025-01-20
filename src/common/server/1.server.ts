@@ -43,7 +43,7 @@ export class Server {
           this.isServerRunning = true;
         } catch (err) {
           this.logger.error("Failed to start the Health Server: " + err);
-          await this.stopServer(); // Ensures cleanup if health server fails
+          await this.stopServer();
         }
       });
     } catch (err) {

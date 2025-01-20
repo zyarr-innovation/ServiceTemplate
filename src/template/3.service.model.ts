@@ -1,8 +1,17 @@
-import { IStudent } from "./0.model";
+function createServiceModelFromObjectMap(propertyMap: IPropertyMap): string {
+  const interfaceName = `IService${propertyMap.name}`;
+  const modelImport = `I${propertyMap.name}`;
 
-export interface IServiceStudent {
-  get(studentId: number): Promise<IStudent | null>;
-  create(studentInfo: IStudent): Promise<IStudent | null>;
-  update(studentId: number, studentInfo: IStudent): Promise<number>;
-  delete(studentId: number): Promise<number>;
+  const serviceInterfaceCode = `
+  import { ${modelImport} } from "./0.model";
+
+  export interface ${interfaceName} {
+    get(in${propertyMap.name}Id: number): Promise<${modelImport} | null>;
+    create(in${propertyMap.name}Info: ${modelImport}): Promise<${modelImport} | null>;
+    update(in${propertyMap.name}Id: number, in${propertyMap.name}Info: ${modelImport}): Promise<number>;
+    delete(in${propertyMap.name}Id: number): Promise<number>;
+  }
+  `;
+
+  return serviceInterfaceCode;
 }

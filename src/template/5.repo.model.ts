@@ -1,20 +1,32 @@
-import { Sequelize, Transaction } from "sequelize";
+function createRepoModelFromObjectMap(propertyMap: IPropertyMap): string {
+  const interfaceName = `IRepo${propertyMap.name}`;
+  const modelName = `I${propertyMap.name}`;
+  const dtoName = `DTO${propertyMap.name}`;
 
-import { IStudent } from "./0.model";
-import { DTOStudent } from "./7.dto.model";
+  const repositoryInterfaceCode = `
+    import { Sequelize, Transaction } from "sequelize";
 
-export interface IRepoStudent {
-  isExist(inStudentId: number): Promise<boolean>;
-  getById(inStudentId: number): Promise<IStudent | null>;
-  create(
-    inStudent: IStudent,
-    transaction?: Transaction
-  ): Promise<IStudent | null>;
-  update(
-    studentId: number,
-    inStudent: IStudent,
-    transaction?: Transaction
-  ): Promise<number>;
-  delete(inStudentId: number, transaction?: Transaction): Promise<number>;
-  convertToObject(srcObject: DTOStudent): IStudent;
+    import { ${modelName} } from "./0.model";
+    import { ${dtoName} } from "./7.dto.model";
+
+    export interface ${interfaceName} {
+      isExist(in${propertyMap.name}Id: number): Promise<boolean>;
+      getById(in${propertyMap.name}Id: number): Promise<${modelName} | null>;
+      create(
+        in${propertyMap.name}: ${modelName},
+        transaction?: Transaction
+      ): Promise<${modelName} | null>;
+      update(
+        ${propertyMap.name.toLowerCase()}Id: number,
+        in${propertyMap.name}: ${modelName},
+        transaction?: Transaction
+      ): Promise<number>;
+      delete(in${
+        propertyMap.name
+      }Id: number, transaction?: Transaction): Promise<number>;
+      convertToObject(srcObject: ${dtoName}): ${modelName};
+    }
+    `;
+
+  return repositoryInterfaceCode;
 }

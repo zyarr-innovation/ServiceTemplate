@@ -2,7 +2,8 @@ import { ITenant } from "../service/tenant.service";
 import { getEnvVariable, validateEnvVariables } from "../utility/env-utils";
 
 const DEFAULT_OPTIONS = {
-  dialect: "mysql",
+  dialect: "mysql", // Change dialect to sqlite
+  storage: ":memory:", // Use in-memory storage
   pool: {
     max: 10,
     min: 0,
@@ -66,40 +67,49 @@ function readTenantConfiguration(): ITenant[] {
     ]);
 
     tenants.push({
-      id: process.env[`${tenantEnvPrefix}_ID`] || "",
+      id: getEnvVariable(`${tenantEnvPrefix}_ID`, ""),
       authentication: {
-        authServer: process.env[`${tenantEnvPrefix}_AUTH_SERVER`] || "",
-        clientId: process.env[`${tenantEnvPrefix}_CLIENT_ID`] || "",
-        clientSecret: process.env[`${tenantEnvPrefix}_CLIENT_SECRET`] || "",
+        authServer: getEnvVariable(`${tenantEnvPrefix}_AUTH_SERVER`, ""),
+        clientId: getEnvVariable(`${tenantEnvPrefix}_CLIENT_ID`, ""),
+        clientSecret: getEnvVariable(`${tenantEnvPrefix}_CLIENT_SECRET`, ""),
       },
       database: {
-        sqlDBName: process.env[`${tenantEnvPrefix}_NAME`] || "",
-        connectionUri: process.env[`${tenantEnvPrefix}_DB_URI`] || "",
-        username: process.env[`${tenantEnvPrefix}_DB_USERNAME`] || "",
-        password: process.env[`${tenantEnvPrefix}_DB_PASSWORD`] || "",
+        sqlDBName: getEnvVariable(`${tenantEnvPrefix}_NAME`, ""),
+        connectionUri: getEnvVariable(`${tenantEnvPrefix}_DB_URI`, ""),
+        username: getEnvVariable(`${tenantEnvPrefix}_DB_USERNAME`, ""),
+        password: getEnvVariable(`${tenantEnvPrefix}_DB_PASSWORD`, ""),
         options: {
-          dialect:
-            process.env[`${tenantEnvPrefix}_DB_DIALECT`] ||
-            DEFAULT_OPTIONS.dialect,
+          dialect: getEnvVariable(
+            `${tenantEnvPrefix}_DB_DIALECT`,
+            DEFAULT_OPTIONS.dialect
+          ),
           pool: {
             max: parseInt(
-              process.env[`${tenantEnvPrefix}_DB_POOL_MAX`] ||
-                DEFAULT_OPTIONS.pool.max.toString(),
+              getEnvVariable(
+                `${tenantEnvPrefix}_DB_POOL_MAX`,
+                DEFAULT_OPTIONS.pool.max.toString()
+              ),
               10
             ),
             min: parseInt(
-              process.env[`${tenantEnvPrefix}_DB_POOL_MIN`] ||
-                DEFAULT_OPTIONS.pool.min.toString(),
+              getEnvVariable(
+                `${tenantEnvPrefix}_DB_POOL_MIN`,
+                DEFAULT_OPTIONS.pool.min.toString()
+              ),
               10
             ),
             acquire: parseInt(
-              process.env[`${tenantEnvPrefix}_DB_POOL_ACQUIRE`] ||
-                DEFAULT_OPTIONS.pool.acquire.toString(),
+              getEnvVariable(
+                `${tenantEnvPrefix}_DB_POOL_ACQUIRE`,
+                DEFAULT_OPTIONS.pool.acquire.toString()
+              ),
               10
             ),
             idle: parseInt(
-              process.env[`${tenantEnvPrefix}_DB_POOL_IDLE`] ||
-                DEFAULT_OPTIONS.pool.idle.toString(),
+              getEnvVariable(
+                `${tenantEnvPrefix}_DB_POOL_IDLE`,
+                DEFAULT_OPTIONS.pool.idle.toString()
+              ),
               10
             ),
           },
