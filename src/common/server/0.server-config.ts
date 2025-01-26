@@ -20,11 +20,39 @@ const serverConfig = {
   limit: getEnvVariable("REQUEST_PAYLOAD_LIMIT", "1mb"),
 
   corsOption: {
-    origin: process.env.CORSURL,
-    methods: "GET, POST, PUT, DELETE",
+    origin: function (origin: any, callback: any) {
+      const allowedOrigins = [
+        "http://localhost:3000",
+        "http://localhost:4200",
+        "http://127.0.0.1:3000",
+        "http://127.0.0.1:4200",
+      ];
+
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, origin);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     credentials: true,
-    allowedHeaders:
-      "Origin, X-Requested-With, Content-Type, Accept, Authorization",
+    allowedHeaders: [
+      "Origin",
+      "X-Requested-With",
+      "Content-Type",
+      "Accept",
+      "Authorization",
+      "tenantid",
+      "traceparent",
+    ],
+    exposedHeaders: [
+      "Content-Type",
+      "Authorization",
+      "tenantid",
+      "traceparent",
+    ],
+    optionsSuccessStatus: 200,
+    preflightContinue: false,
   },
   helmet: {
     contentSecurityPolicy: {
