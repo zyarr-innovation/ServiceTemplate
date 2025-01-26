@@ -13,6 +13,11 @@ import { ServiceStudentImpl } from "../student/4.service";
 import { IRepoStudent } from "../student/5.repo.model";
 import { RepoStudentImpl } from "../student/6.repo";
 import { Validate } from "../common/validate";
+import { ControllerSchool } from "../school/2.controller";
+import { IServiceSchool } from "../school/3.service.model";
+import { ServiceSchoolImpl } from "../school/4.service";
+import { IRepoSchool } from "../school/5.repo.model";
+import { RepoSchoolImpl } from "../school/6.repo";
 
 
 const container = new Container();
@@ -21,6 +26,12 @@ container.bind(ServiceTenant).toSelf().inSingletonScope();
 container.bind(RequestContextProvider).toSelf().inSingletonScope();
 container.bind(MiddlewareProvider).toSelf().inSingletonScope();
 container.bind<Validate>(Validate).to(Validate);
+
+container
+  .bind<ControllerSchool>(TYPES.ControllerSchool)
+  .to(ControllerSchool);
+container.bind<IServiceSchool>(TYPES.ServiceSchool).to(ServiceSchoolImpl);
+container.bind<IRepoSchool>(TYPES.RepoSchool).to(RepoSchoolImpl);
 
 container
   .bind<ControllerStudent>(TYPES.ControllerStudent)
